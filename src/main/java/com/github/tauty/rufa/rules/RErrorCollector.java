@@ -23,7 +23,7 @@ import org.junit.runners.model.Statement;
 
 import java.util.concurrent.Callable;
 
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 /**
  * Created by tetsuo.uchiumi on 4/24/14.
@@ -40,8 +40,8 @@ public class RErrorCollector implements TestRule {
                     stmt.evaluate();
                 } catch (Throwable t) {
                     errs.addError(t);
-                    throw errs.unwrapIfSingle();
                 }
+                if (errs.isFailure()) throw errs.unwrapIfSingle();
 
             }
         };

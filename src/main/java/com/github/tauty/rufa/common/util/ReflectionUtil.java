@@ -237,11 +237,11 @@ public class ReflectionUtil {
         public List<AccessibleObject> getMembers(String name) {
             List<AccessibleObject> members = newList();
             Field f = getField(name);
-            if(f != null) {
+            if (f != null) {
                 members.add(f);
             }
             List<Method> methods = getMethods(name);
-            if(methods != null) {
+            if (methods != null) {
                 members.addAll(methods);
             }
             return members;
@@ -258,7 +258,7 @@ public class ReflectionUtil {
 
         private List<Method> getOrNew(Map<String, List<Method>> mMap, String mName) {
             List<Method> methods = mMap.get(mName);
-            if(methods == null) {
+            if (methods == null) {
                 mMap.put(mName, methods = newList());
             }
             return methods;

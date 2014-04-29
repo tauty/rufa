@@ -19,7 +19,7 @@ package com.github.tauty.rufa.common.tuple;
  * Created by tetsuo.uchiumi on 4/29/14.
  */
 public class Triple<T1, T2, T3> extends Tuple3<T1, T2, T3> {
-    Triple(T1 _1, T2 _2, T3 _3){
+    Triple(T1 _1, T2 _2, T3 _3) {
         super(_1, _2, _3);
     }
 }

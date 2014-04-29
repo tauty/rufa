@@ -252,7 +252,7 @@ public class RTheoriesTest {
         public RTheories rt = new RTheories(this, true);
 
         @RDataPoint(bindTo = {"foo", "bar", "baz"})
-        Object[][] genAry(){
+        Object[][] genAry() {
             // @formatter:off
             Object[][] objsList = {
                     {"1928", "3072", 5000},

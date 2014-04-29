@@ -26,7 +26,7 @@ public class AssertErrorRule implements TestRule {
     @Override
     public Statement apply(final Statement stmt, final Description desc) {
         final ExpectAssertError annotation = desc.getAnnotation(ExpectAssertError.class);
-        if(annotation == null) return stmt;
+        if (annotation == null) return stmt;
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {

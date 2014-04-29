@@ -22,10 +22,9 @@ import org.junit.runner.RunWith;
 
 import java.util.Map;
 
-import static com.github.tauty.rufa.common.util.CollectionUtil.$;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static com.github.tauty.rufa.common.util.CollectionUtil.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 /**
  * Created by tetsuo.uchiumi on 3/29/14.
@@ -239,7 +238,7 @@ public class RTheoriesFailTest {
         @RDataPoint(to = -3)
         int foo;
 
-        @RDataPoint(from= -10, to = -20, step = 3)
+        @RDataPoint(from = -10, to = -20, step = 3)
         int bar;
 
         @Test

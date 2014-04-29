@@ -62,10 +62,10 @@ public class CollectionUtil {
 
     public static <E> List<E> join(List<E> list1, List<E> list2) {
         List<E> joinedList = newList();
-        if(list1 != null) {
+        if (list1 != null) {
             joinedList.addAll(list1);
         }
-        if(list2 != null) {
+        if (list2 != null) {
             joinedList.addAll(list2);
         }
         return joinedList;

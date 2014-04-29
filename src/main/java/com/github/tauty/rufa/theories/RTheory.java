@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 /**
  * Created by tetsuo.uchiumi on 3/27/14.
  */
-@Target({ElementType.METHOD })
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RTheory {
     String[] targets() default {};

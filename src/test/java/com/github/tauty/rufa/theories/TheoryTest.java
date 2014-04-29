@@ -22,15 +22,15 @@ import org.junit.runner.RunWith;
 
 @RunWith(Theories.class)
 public class TheoryTest {
-	
-	@DataPoints
-	public static String[] datas = {
-		"tako", "ika", "namako"
-	};
 
-	@Theory
-	public void test(String foo) {
-		System.out.println(foo);
-	}
+    @DataPoints
+    public static String[] datas = {
+            "tako", "ika", "namako"
+    };
+
+    @Theory
+    public void test(String foo) {
+        System.out.println(foo);
+    }
 
 }

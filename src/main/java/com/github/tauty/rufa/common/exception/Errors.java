@@ -21,8 +21,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.List;
 
-import static com.github.tauty.rufa.common.util.CollectionUtil.newList;
 import static com.github.tauty.rufa.common.tuple.Tuples.*;
+import static com.github.tauty.rufa.common.util.CollectionUtil.*;
 
 /**
  * Created by tetsuo.uchiumi on 4/11/14.

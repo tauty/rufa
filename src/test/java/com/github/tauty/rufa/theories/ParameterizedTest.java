@@ -15,16 +15,15 @@
  */
 package com.github.tauty.rufa.theories;
 
-import static org.junit.Assert.assertThat;
-
-import java.util.Arrays;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import static org.hamcrest.CoreMatchers.is;
+import java.util.Arrays;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
 public class ParameterizedTest {

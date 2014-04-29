@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 /**
  * Created by tetsuo.uchiumi on 3/29/14.
  */
-@Target({ ElementType.FIELD, ElementType.METHOD })
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RDataPoint {
 
