@@ -30,7 +30,13 @@ import static com.github.tauty.rufa.common.util.CollectionUtil.*;
 import static com.github.tauty.rufa.common.util.ReflectionUtil.*;
 
 /**
- * Created by tetsuo.uchiumi on 3/27/14.
+ * A TestRule class which allows you to parameterize your test case.
+ *
+ * As there are so many examples, To refer to the link below and check the test class is recommended.
+ * <link>https://github.com/tauty/rufa/blob/master/src/test/java/com/github/tauty/rufa/theories/RTheoriesTest.java</link>
+ *
+ * @see org.junit.experimental.theories.Theory
+ * @author tauty
  */
 public class RTheories implements TestRule {
 
@@ -135,7 +141,7 @@ public class RTheories implements TestRule {
             stmt.evaluate();
             println(title);
         } catch (Throwable t) {
-            this.errors.addErrors(title.toString(), t);
+            this.errors.addError(title.toString(), t);
         }
     }
 
@@ -343,5 +349,4 @@ public class RTheories implements TestRule {
             return maps.iterator();
         }
     }
-
 }

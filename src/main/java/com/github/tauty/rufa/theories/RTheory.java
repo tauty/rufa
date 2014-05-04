@@ -21,7 +21,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by tetsuo.uchiumi on 3/27/14.
+ * An annotation class which annotate a test method as which is parameterized.
+ *
+ * @see com.github.tauty.rufa.theories.RTheories
+ * @author tauty
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

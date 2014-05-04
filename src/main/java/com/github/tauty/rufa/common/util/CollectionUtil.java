@@ -20,44 +20,44 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by tetsuo.uchiumi on 4/23/14.
+ * A utility class which enables you to use collections easily.
  */
 public class CollectionUtil {
 
-    public static final <E> List<E> newList() {
+    public static <E> List<E> newList() {
         return newArrayList();
     }
 
-    public static final <E> ArrayList<E> newArrayList() {
+    public static <E> ArrayList<E> newArrayList() {
         return new ArrayList<E>();
     }
 
-    public static final <E> LinkedList<E> newLinkedList() {
+    public static <E> LinkedList<E> newLinkedList() {
         return new LinkedList<E>();
     }
 
-    public static final <E> Set<E> newSet() {
+    public static <E> Set<E> newSet() {
         return newHashSet();
     }
 
-    public static final <E> HashSet<E> newHashSet() {
+    public static <E> HashSet<E> newHashSet() {
         return new HashSet<E>();
     }
 
-    public static final <K, V> Map<K, V> newMap() {
+    public static <K, V> Map<K, V> newMap() {
         return newHashMap();
     }
 
-    public static final <K, V> HashMap<K, V> newHashMap() {
+    public static <K, V> HashMap<K, V> newHashMap() {
         return new HashMap<K, V>();
     }
 
-    public static final <K, V> ConcurrentHashMap<K, V> newConcurrentMap() {
+    public static <K, V> ConcurrentHashMap<K, V> newConcurrentMap() {
         return new ConcurrentHashMap<K, V>();
     }
 
     public static <K, V> ChainMap $(K key, V value) {
-        return new ChainMap().$(key, value);
+        return new ChainMap<K, V>().$(key, value);
     }
 
     public static <E> List<E> join(List<E> list1, List<E> list2) {
@@ -105,8 +105,8 @@ public class CollectionUtil {
         return itr == null ? null : itr.iterator();
     }
 
-    public static class ChainMap<K, V> extends LinkedHashMap {
-        public ChainMap $(K key, V value) {
+    public static class ChainMap<K, V> extends LinkedHashMap<K, V> {
+        public ChainMap<K, V> $(K key, V value) {
             this.put(key, value);
             return this;
         }

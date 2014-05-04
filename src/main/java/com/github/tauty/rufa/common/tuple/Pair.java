@@ -16,10 +16,20 @@
 package com.github.tauty.rufa.common.tuple;
 
 /**
- * Created by tetsuo.uchiumi on 4/29/14.
+ * An alias of Tuple2.
+ *
+ * @see com.github.tauty.rufa.common.tuple.Tuple2
+ * @see com.github.tauty.rufa.common.tuple.MutablePair
+ * @see com.github.tauty.rufa.common.tuple.Tuples
+ * @author tauty
  */
 public class Pair<T1, T2> extends Tuple2<T1, T2> {
     Pair(T1 _1, T2 _2) {
         super(_1, _2);
+    }
+
+    @Override
+    public MutablePair<T1, T2> toMutable() {
+        return new MutablePair<T1, T2>(_1, _2);
     }
 }

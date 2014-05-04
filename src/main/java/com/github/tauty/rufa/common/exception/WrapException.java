@@ -16,7 +16,10 @@
 package com.github.tauty.rufa.common.exception;
 
 /**
- * Created by tetsuo.uchiumi on 4/9/14.
+ * The exception which wraps any throwable instance.
+ * Mostly it is used when a checked exception is caught and the process cannot be recovered.
+ *
+ * @author tauty
  */
 public class WrapException extends RuntimeException {
     public WrapException(String message, Throwable cause) {

@@ -20,7 +20,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 /**
- * Created by tetsuo.uchiumi on 4/22/14.
+ * Draft version of a TestRule class which allows you to generate a test case whose collect case is AssertionFailure.
  */
 public class AssertErrorRule implements TestRule {
     @Override
@@ -30,13 +30,13 @@ public class AssertErrorRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                Throwable throwable;
+                Throwable throwable = null;
                 try {
                     stmt.evaluate();
-                    throwable = null;
                 } catch (Throwable t) {
                     throwable = t;
                 }
+                System.out.println(throwable);
             }
         };
     }

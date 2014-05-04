@@ -26,7 +26,10 @@ import java.util.concurrent.Callable;
 import static org.junit.Assert.*;
 
 /**
- * Created by tetsuo.uchiumi on 4/24/14.
+ * A TestRule class which provides you 'checkThat' method which can be used with assertion method and exception.
+ *
+ * @see org.junit.rules.ErrorCollector
+ * @author tauty
  */
 public class RErrorCollector implements TestRule {
     private final Errors errs = new Errors("Multiple failures are detected:");
@@ -42,7 +45,6 @@ public class RErrorCollector implements TestRule {
                     errs.addError(t);
                 }
                 if (errs.isFailure()) throw errs.unwrapIfSingle();
-
             }
         };
     }

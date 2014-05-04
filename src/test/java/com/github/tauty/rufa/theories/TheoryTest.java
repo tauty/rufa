@@ -20,6 +20,9 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
+/**
+ * Theories example.
+ */
 @RunWith(Theories.class)
 public class TheoryTest {
 

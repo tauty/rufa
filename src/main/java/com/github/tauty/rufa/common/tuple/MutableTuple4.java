@@ -16,26 +16,43 @@
 package com.github.tauty.rufa.common.tuple;
 
 /**
- * Immutable tuple class which contains 4 values.
+ * Mutable tuple class which contains 4 values.
  *
- * @see com.github.tauty.rufa.common.tuple.MutableTuple3
+ * @see com.github.tauty.rufa.common.tuple.Tuple4
  * @see com.github.tauty.rufa.common.tuple.Tuples
  * @author tauty
  */
-public class Tuple4<T1, T2, T3, T4> {
-    public final T1 _1;
-    public final T2 _2;
-    public final T3 _3;
-    public final T4 _4;
+public class MutableTuple4<T1, T2, T3, T4> {
+    public T1 _1;
+    public T2 _2;
+    public T3 _3;
+    public T4 _4;
 
-    Tuple4(T1 _1, T2 _2, T3 _3, T4 _4) {
-        this._1 = _1;
-        this._2 = _2;
-        this._3 = _3;
-        this._4 = _4;
+    public MutableTuple4(T1 _1, T2 _2, T3 _3, T4 _4) {
+        this._1(_1)._2(_2)._3(_3)._4(_4);
     }
 
-    public MutableTuple4<T1, T2, T3, T4> toMutable() {
-        return new MutableTuple4<T1, T2, T3, T4>(_1, _2, _3, _4);
+    public MutableTuple4<T1, T2, T3, T4> _1(T1 _1) {
+        this._1 = _1;
+        return this;
+    }
+
+    public MutableTuple4<T1, T2, T3, T4> _2(T2 _2) {
+        this._2 = _2;
+        return this;
+    }
+
+    public MutableTuple4<T1, T2, T3, T4> _3(T3 _3) {
+        this._3 = _3;
+        return this;
+    }
+
+    public MutableTuple4<T1, T2, T3, T4> _4(T4 _4) {
+        this._4 = _4;
+        return this;
+    }
+
+    public Tuple4<T1, T2, T3, T4> toImmutable() {
+        return new Tuple4<T1, T2, T3, T4>(_1, _2, _3, _4);
     }
 }

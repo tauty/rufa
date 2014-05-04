@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.tauty.rufa.common.util;
-
-import com.github.tauty.rufa.common.exception.WrapException;
+package com.github.tauty.rufa.common.tuple;
 
 /**
- * A utility class which enables you to use exceptions and errors easily.
+ * An alias of MutableTuple2.
+ *
+ * @see com.github.tauty.rufa.common.tuple.MutableTuple2
+ * @see com.github.tauty.rufa.common.tuple.Pair
+ * @see com.github.tauty.rufa.common.tuple.Tuples
+ * @author tauty
  */
-public class ExceptionUtil {
+public class MutablePair<T1, T2> extends MutableTuple2<T1, T2> {
 
-    public static RuntimeException wrapIfChecked(Throwable t) {
-        if (t instanceof RuntimeException) return (RuntimeException) t;
-        if (t instanceof Error) throw (Error) t;
-        return new WrapException(t);
+    public MutablePair(T1 _1, T2 _2) {
+        super(_1, _2);
     }
 
-    public static boolean isCaused(Class<?> throwableClass, Throwable t) {
-        if (t == null) return false;
-        return throwableClass.isInstance(t) || isCaused(throwableClass, t.getCause());
+    @Override
+    public Pair<T1, T2> toImmutable() {
+        return new Pair<T1, T2>(_1, _2);
     }
 }

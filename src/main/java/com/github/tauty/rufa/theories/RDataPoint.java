@@ -21,7 +21,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by tetsuo.uchiumi on 3/29/14.
+ * An annotation class which annotate that a field and a method is data point of RTheory.
+ *
+ * @see com.github.tauty.rufa.theories.RTheories
+ * @author tauty
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

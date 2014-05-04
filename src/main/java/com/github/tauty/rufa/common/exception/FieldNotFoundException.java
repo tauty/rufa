@@ -16,7 +16,10 @@
 package com.github.tauty.rufa.common.exception;
 
 /**
- * Created by tetsuo.uchiumi on 4/12/14.
+ * The exception thrown by ReflectionUtil when the name of the field specified is not found on the class specified.
+ *
+ * @see com.github.tauty.rufa.common.util.ReflectionUtil
+ * @author tauty
  */
 public class FieldNotFoundException extends RuntimeException {
     public FieldNotFoundException(String msg) {

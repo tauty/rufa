@@ -26,9 +26,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.github.tauty.rufa.common.util.CollectionUtil.*;
+import static com.github.tauty.rufa.common.util.ExceptionUtil.*;
 
 /**
- * Created by tetsuo.uchiumi on 4/6/14.
+ * A utility class which enables you to use reflection and meta-programming easily.
  */
 public class ReflectionUtil {
 
@@ -43,7 +44,7 @@ public class ReflectionUtil {
             Method method = clazz.getDeclaredMethod(methodName, classes);
             return ensureAccessible(method).invoke(null, params);
         } catch (Exception e) {
-            throw ExceptionUtil.wrapIfChecked(e);
+            throw wrapIfChecked(e);
         }
     }
 
@@ -56,7 +57,7 @@ public class ReflectionUtil {
             Method method = receiver.getClass().getDeclaredMethod(methodName, classes);
             return ensureAccessible(method).invoke(receiver, params);
         } catch (Exception e) {
-            throw ExceptionUtil.wrapIfChecked(e);
+            throw wrapIfChecked(e);
         }
     }
 
@@ -64,7 +65,7 @@ public class ReflectionUtil {
         try {
             return ensureAccessible(method).invoke(receiver, params);
         } catch (Exception e) {
-            throw ExceptionUtil.wrapIfChecked(e);
+            throw wrapIfChecked(e);
         }
     }
 

@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
- * Created by tetsuo.uchiumi on 3/29/14.
+ * RTheories examples of wrong use case.
  */
 @RunWith(Enclosed.class)
 public class RTheoriesFailTest {

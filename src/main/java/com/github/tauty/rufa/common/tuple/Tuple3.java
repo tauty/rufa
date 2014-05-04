@@ -16,7 +16,12 @@
 package com.github.tauty.rufa.common.tuple;
 
 /**
- * Created by tetsuo.uchiumi on 4/29/14.
+ * Immutable tuple class which contains 3 values.
+ *
+ * @see com.github.tauty.rufa.common.tuple.Triple
+ * @see com.github.tauty.rufa.common.tuple.MutableTriple
+ * @see com.github.tauty.rufa.common.tuple.Tuples
+ * @author tauty
  */
 public class Tuple3<T1, T2, T3> {
     public final T1 _1;
@@ -27,5 +32,9 @@ public class Tuple3<T1, T2, T3> {
         this._1 = _1;
         this._2 = _2;
         this._3 = _3;
+    }
+
+    public MutableTuple3<T1, T2, T3> toMutable() {
+        return new MutableTuple3<T1, T2, T3>(_1, _2, _3);
     }
 }

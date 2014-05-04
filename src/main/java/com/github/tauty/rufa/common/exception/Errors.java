@@ -25,18 +25,27 @@ import static com.github.tauty.rufa.common.tuple.Tuples.*;
 import static com.github.tauty.rufa.common.util.CollectionUtil.*;
 
 /**
- * Created by tetsuo.uchiumi on 4/11/14.
+ * AssertionError class which can contains multiple exceptions and errors.
+ * The stack traces of them would be output when the 'stackTrace' method of
+ * this class is called.
+ *
+ * @see com.github.tauty.rufa.rules.RErrorCollector
+ * @see com.github.tauty.rufa.theories.RTheories
+ * @author tauty
  */
 public class Errors extends AssertionError {
     /***/
     private static final long serialVersionUID = 1L;
     private final List<Pair<String, Throwable>> errList = newList();
 
-    public Errors(String msg) {
+    public Errors(String msg, Throwable... causes) {
         super(msg);
+        for (Throwable cause : causes) {
+            addError(cause);
+        }
     }
 
-    public void addErrors(String title, Throwable t) {
+    public void addError(String title, Throwable t) {
         errList.add(pair(title, t));
     }
 
@@ -49,7 +58,7 @@ public class Errors extends AssertionError {
             title = e.getMethodName() + "(" + e.getLineNumber() + ")";
             break;
         }
-        addErrors(title, t);
+        addError(title, t);
     }
 
     public void checkFailure() throws Throwable {

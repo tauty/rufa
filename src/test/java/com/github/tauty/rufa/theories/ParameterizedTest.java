@@ -25,6 +25,9 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+/**
+ * Parameterized example.
+ */
 @RunWith(Parameterized.class)
 public class ParameterizedTest {
 

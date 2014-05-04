@@ -16,8 +16,7 @@
 package com.github.tauty.rufa.common;
 
 /**
- * Created by tetsuo.uchiumi on 4/22/14.
+ * Draft version of a TestRule class which allows you to generate a test case whose collect case is AssertionFailure.
  */
 public @interface ExpectAssertError {
-    String[] bindTo() default {};
 }
