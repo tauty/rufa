@@ -36,7 +36,7 @@ public class RErrorCollectorTest {
     public void testAddError() throws Exception {
         try {
             "".charAt(10);
-        }catch (Exception e) {
+        } catch (Exception e) {
             rec.addError(e);
         }
     }

@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import static com.github.tauty.rufa.common.tuple.Tuples.*;
+import static com.github.tauty.rufa.common.util.CommonUtil.*;
 import static com.github.tauty.rufa.common.util.CollectionUtil.*;
 
 /**
@@ -29,9 +30,9 @@ import static com.github.tauty.rufa.common.util.CollectionUtil.*;
  * The stack traces of them would be output when the 'stackTrace' method of
  * this class is called.
  *
+ * @author tauty
  * @see com.github.tauty.rufa.rules.RErrorCollector
  * @see com.github.tauty.rufa.theories.RTheories
- * @author tauty
  */
 public class Errors extends AssertionError {
     /***/
@@ -52,11 +53,13 @@ public class Errors extends AssertionError {
     public void addError(Throwable t) {
         String title = "";
         for (StackTraceElement e : t.getStackTrace()) {
-            String className = e.getClassName();
-            if (className.startsWith("org.hamcrest")
-                    || className.startsWith("org.junit")) continue;
-            title = e.getMethodName() + "(" + e.getLineNumber() + ")";
-            break;
+            if (!containsOnStartsWith(e.getClassName(),
+                    "org.junit.",
+                    "org.hamcrest.",
+                    "com.github.tauty.rufa.")) {
+                title = e.getMethodName() + "(" + e.getLineNumber() + ")";
+                break;
+            }
         }
         addError(title, t);
     }

@@ -15,6 +15,8 @@
  */
 package com.github.tauty.rufa.common.tuple;
 
+import static com.github.tauty.rufa.common.util.CommonUtil.*;
+
 /**
  * Immutable tuple class which contains 4 values.
  *
@@ -37,5 +39,27 @@ public class Tuple4<T1, T2, T3, T4> {
 
     public MutableTuple4<T1, T2, T3, T4> toMutable() {
         return new MutableTuple4<T1, T2, T3, T4>(_1, _2, _3, _4);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null) return false;
+        if(obj instanceof Tuple4) {
+            Tuple4 t = (Tuple4) obj;
+            return equals(t._1, t._2, t._3, t._4);
+        } else if(obj instanceof MutableTuple4) {
+            MutableTuple4 t = (MutableTuple4) obj;
+            return equals(t._1, t._2, t._3, t._4);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return hashSum(_1, _2, _3, _4);
+    }
+
+    public boolean equals(Object val1, Object val2, Object val3, Object val4) {
+        return isSame(_1, val1) && isSame(_2, val2) && isSame(_3, val3) && isSame(_4, val4);
     }
 }

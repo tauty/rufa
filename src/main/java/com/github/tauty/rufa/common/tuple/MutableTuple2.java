@@ -15,6 +15,8 @@
  */
 package com.github.tauty.rufa.common.tuple;
 
+import static com.github.tauty.rufa.common.util.CommonUtil.*;
+
 /**
  * Mutable tuple class which contains 2 values.
  *
@@ -43,5 +45,27 @@ public class MutableTuple2<T1, T2> {
 
     public Tuple2<T1, T2> toImmutable() {
         return new Tuple2<T1, T2>(_1, _2);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null) return false;
+        if(obj instanceof Tuple2) {
+            Tuple2 t = (Tuple2) obj;
+            return equals(t._1, t._2);
+        } else if(obj instanceof MutableTuple2) {
+            MutableTuple2 t = (MutableTuple2) obj;
+            return equals(t._1, t._2);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return hashSum(_1, _2);
+    }
+
+    public boolean equals(Object val1, Object val2) {
+        return isSame(_1, val1) && isSame(_2, val2);
     }
 }

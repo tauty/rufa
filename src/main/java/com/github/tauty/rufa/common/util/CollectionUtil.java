@@ -56,10 +56,6 @@ public class CollectionUtil {
         return new ConcurrentHashMap<K, V>();
     }
 
-    public static <K, V> ChainMap $(K key, V value) {
-        return new ChainMap<K, V>().$(key, value);
-    }
-
     public static <E> List<E> join(List<E> list1, List<E> list2) {
         List<E> joinedList = newList();
         if (list1 != null) {
@@ -98,6 +94,10 @@ public class CollectionUtil {
             };
         }
         return null;
+    }
+
+    public static <K, V> ChainMap $(K key, V value) {
+        return new ChainMap<K, V>().$(key, value);
     }
 
     public static Iterator<?> toIterator(final Object obj) {
