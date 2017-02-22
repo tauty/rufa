@@ -470,7 +470,7 @@ public class RTheoriesTest {
 
     public static class BoolEnumTest {
 
-        private static enum E {
+        private enum E {
             A, B, C, D, E
         }
 
@@ -491,7 +491,7 @@ public class RTheoriesTest {
 
     public static class BoolEnumTest_Target {
 
-        private static enum E {
+        private enum E {
             A, B, C, D, E
         }
 
@@ -514,7 +514,7 @@ public class RTheoriesTest {
 
     public static class ExceptionTest {
 
-        private static enum E {
+        private enum E {
             A, B, C, D, E
         }
 

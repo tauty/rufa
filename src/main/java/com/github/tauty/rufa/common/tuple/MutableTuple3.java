@@ -72,6 +72,6 @@ public class MutableTuple3<T1, T2, T3> {
     }
 
     public boolean equals(Object val1, Object val2, Object val3) {
-        return isSame(_1, val1) && isSame(_2, val2) && isSame(_3, val3);
+        return equalsSafely(_1, val1) && equalsSafely(_2, val2) && equalsSafely(_3, val3);
     }
 }

@@ -34,7 +34,6 @@ import static org.junit.Assert.*;
 public class RErrorCollector implements TestRule {
     private final Errors errs = new Errors("Multiple failures are detected:");
 
-    @Override
     public Statement apply(final Statement stmt, Description desc) {
         return new Statement() {
             @Override

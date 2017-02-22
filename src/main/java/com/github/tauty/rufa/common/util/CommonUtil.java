@@ -19,11 +19,15 @@ public class CommonUtil {
         return false;
     }
 
-    public static boolean isSame(Object... vals) {
+    public static boolean equalsSafely(Object o1, Object o2) {
+        return (o1 == null || o2 == null) ? (o1 == o2) : o1.equals(o2);
+    }
+
+    public static boolean equalsSafely(Object... vals) {
         if(vals.length == 0) return true;
         Object val0 = vals[0];
         for (int i = 1; i < vals.length; i++) {
-            if(val0 != vals[i] && (val0 == null || !val0.equals(vals[i]))) return false;
+            if(!equalsSafely(val0, vals[i])) return false;
         }
         return true;
     }

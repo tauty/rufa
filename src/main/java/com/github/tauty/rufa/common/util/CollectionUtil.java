@@ -74,18 +74,15 @@ public class CollectionUtil {
             return (Iterable<?>) obj;
         } else if (obj.getClass().isArray()) {
             return new Iterable<Object>() {
-                @Override
                 public Iterator<Object> iterator() {
                     return new ImmutableIterator<Object>() {
                         final int LENGTH = Array.getLength(obj);
                         int index = 0;
 
-                        @Override
                         public boolean hasNext() {
                             return index < LENGTH;
                         }
 
-                        @Override
                         public Object next() {
                             return Array.get(obj, index++);
                         }
@@ -114,7 +111,6 @@ public class CollectionUtil {
 
     public static abstract class ImmutableIterator<E> implements Iterator<E> {
 
-        @Override
         public void remove() {
             throw new UnsupportedOperationException("Doesn't support 'remove' method.");
         }

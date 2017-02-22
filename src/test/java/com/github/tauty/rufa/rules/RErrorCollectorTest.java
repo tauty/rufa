@@ -45,7 +45,6 @@ public class RErrorCollectorTest {
     public void checkSucceeds() throws Exception {
         rec.addError(new Exception("dummy"));
         rec.checkSucceeds(new Callable<Object>() {
-            @Override
             public Object call() throws Exception {
                 return "".charAt(10);
             }

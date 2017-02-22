@@ -57,6 +57,6 @@ public class Tuple2<T1, T2> {
     }
 
     public boolean equals(Object val1, Object val2) {
-        return isSame(_1, val1) && isSame(_2, val2);
+        return equalsSafely(_1, val1) && equalsSafely(_2, val2);
     }
 }

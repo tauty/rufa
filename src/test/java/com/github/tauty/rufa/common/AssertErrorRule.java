@@ -23,7 +23,6 @@ import org.junit.runners.model.Statement;
  * Draft version of a TestRule class which allows you to generate a test case whose collect case is AssertionFailure.
  */
 public class AssertErrorRule implements TestRule {
-    @Override
     public Statement apply(final Statement stmt, final Description desc) {
         final ExpectAssertError annotation = desc.getAnnotation(ExpectAssertError.class);
         if (annotation == null) return stmt;

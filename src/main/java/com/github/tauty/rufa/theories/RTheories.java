@@ -55,7 +55,6 @@ public class RTheories implements TestRule {
         this.isVerbose = isVerbose;
     }
 
-    @Override
     public Statement apply(final Statement stmt, final Description desc) {
         this.stmt = stmt;
         this.desc = desc;
@@ -193,17 +192,14 @@ public class RTheories implements TestRule {
             this.data = data;
         }
 
-        @Override
         public Iterator<Map<?, ?>> iterator() {
             final Iterator<?> dataIterator = toIterator(data);
             if (dataIterator != null) {
                 return new ImmutableIterator<Map<?, ?>>() {
-                    @Override
                     public boolean hasNext() {
                         return dataIterator.hasNext();
                     }
 
-                    @Override
                     public Map<?, ?> next() {
                         return genCurMap(dataIterator.next());
                     }
@@ -274,12 +270,10 @@ public class RTheories implements TestRule {
                 return new ImmutableIterator<Map<?, ?>>() {
                     int i = 0;
 
-                    @Override
                     public boolean hasNext() {
                         return 0 == i++;
                     }
 
-                    @Override
                     public Map<?, ?> next() {
                         return null;
                     }
@@ -325,12 +319,10 @@ public class RTheories implements TestRule {
                     int current = dp.from();
                     int STEP = 0 < (dp.to() - dp.from()) ? Math.abs(dp.step()) : -Math.abs(dp.step());
 
-                    @Override
                     public boolean hasNext() {
                         return STEP > 0 ? current <= dp.to() : current >= dp.to();
                     }
 
-                    @Override
                     public Map<?, ?> next() {
                         Map<?, ?> map = $(dpField.getName(), current);
                         current += STEP;
