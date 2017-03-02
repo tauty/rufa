@@ -12,6 +12,8 @@ import org.junit.runners.model.Statement;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.github.tauty.rufa.common.util.CommonUtil.equalsSafely;
 
@@ -94,7 +96,8 @@ public class Rufa implements TestRule {
 
                 Object expected = mapper.readValue(line, Object.class);
                 ChainMap<String, String> defMap = compare(expected, actual);
-                if(!defMap.isEmpty()) throw new AssertionFailedError(defMap.toString());
+                System.out.println(defMap);
+                if (!defMap.isEmpty()) throw new AssertionFailedError(defMap.toString());
 
             } else {
                 File parent = this.file.getParentFile();
@@ -138,6 +141,38 @@ public class Rufa implements TestRule {
         return defMap;
     }
 
+    private static class PureIterator<E> {
+        final private Collection<E> collection;
+        final private Iterator<E> iterator;
+        final E head;
+        final boolean hasNext;
+        PureIterator<E> tail = null;
+        PureIterator(Collection<E> collection) {
+            this(collection, collection.iterator());
+        }
+        PureIterator(Collection<E> collection, Iterator<E> iterator) {
+            this.collection = collection;
+            this.iterator = iterator;
+            this.hasNext = iterator.hasNext();
+            this.head = iterator.hasNext() ? iterator.next() : null;
+        }
+        E head() {
+            return this.head;
+        }
+        PureIterator<E> tail() {
+            if(this.tail == null) {
+                this.tail = new PureIterator<E>(this.collection, this.iterator);
+            }
+            return this.tail;
+        }
+        boolean hasNext() {
+            return this.hasNext;
+        }
+        boolean contains(Object o) {
+            return this.collection.contains(o);
+        }
+    }
+
     private ChainMap<String, String> compareLinkedMap(Map expMap, Map actMap, String path, ChainMap<String, String> defMap) {
         Iterator<Map.Entry> expItr = expMap.entrySet().iterator();
         Iterator<Map.Entry> actItr = actMap.entrySet().iterator();
@@ -145,42 +180,39 @@ public class Rufa implements TestRule {
         while (expItr.hasNext() && actItr.hasNext()) {
             Map.Entry exp = expItr.next();
             Map.Entry act = actItr.next();
-            if (!equalsSafely(exp.getKey(), act.getKey())){
-                if (expMap.containsKey(act)) {
-                    while (!equalsSafely(act, exp = expItr.next())) {
-                        defMap.$(genPath(path, exp.getKey()), "@KeyNullable");
-                    }
-                } else if(actMap.containsKey(exp)) {
-                    while (!equalsSafely(exp, act = actItr.next())) {
-                        defMap.$(genPath(path, act.getKey()), "@KeyNullable");
-                    }
-                } else {
+            if (equalsSafely(exp.getKey(), act.getKey())) {
+            } else if (expMap.containsKey(act)) {
+                while (!equalsSafely(act, exp = expItr.next())) {
                     defMap.$(genPath(path, exp.getKey()), "@KeyNullable");
-                    defMap.$(genPath(path, act.getKey()), "@KeyNullable");
-                    continue;
                 }
+            } else if (actMap.containsKey(exp)) {
+                while (!equalsSafely(exp, act = actItr.next())) {
+                    defMap.$(genPath(path, act.getKey()), "@KeyNullable");
+                }
+            } else {
+                defMap.$(genPath(path, exp.getKey()), "@KeyNullable");
+                defMap.$(genPath(path, act.getKey()), "@KeyNullable");
+                continue;
             }
             defMap = compare(exp.getValue(), act.getValue(), genPath(path, exp.getKey()), defMap);
         }
-        while (expItr.hasNext()) {
-            defMap.$(genPath(path, expItr.next().getKey()), "@KeyNullable");
-        }
-        while (actItr.hasNext()) {
-            defMap.$(genPath(path, actItr.next().getKey()), "@KeyNullable");
+        Iterator<Map.Entry> remainingItr = expItr.hasNext() ? expItr : actItr;
+        while (remainingItr.hasNext()) {
+            defMap.$(genPath(path, remainingItr.next().getKey()), "@KeyNullable");
         }
         return defMap;
     }
 
     private ChainMap<String, String> compareMap(Map<?, ?> expMap, Map<?, ?> actMap, String path, ChainMap<String, String> defMap) {
         for (Map.Entry<?, ?> exp : expMap.entrySet()) {
-            if (!actMap.containsKey(exp.getKey())){
+            if (!actMap.containsKey(exp.getKey())) {
                 defMap.$(genPath(path, exp.getKey()), "@KeyNullable");
                 continue;
             }
             defMap = compare(exp.getValue(), actMap.get(exp.getKey()), genPath(path, exp.getKey()), defMap);
         }
         for (Map.Entry<?, ?> act : actMap.entrySet()) {
-            if(!expMap.containsKey(act.getKey())) {
+            if (!expMap.containsKey(act.getKey())) {
                 defMap.$(genPath(path, act.getKey()), "@KeyNullable");
             }
         }
@@ -200,15 +232,113 @@ public class Rufa implements TestRule {
         // It is difficult to solve the problem the order of the list can be changed each time.
         // So, let's skip now.
 
-        for (int i = 0; i < Math.min(expList.size(), actList.size()) ; i++) {
+        for (int i = 0; i < Math.min(expList.size(), actList.size()); i++) {
             defMap = compare(expList.get(i), actList.get(i), genPath(path, i), defMap);
         }
         return defMap;
     }
 
     private ChainMap<String, String> compareAtom(Object exp, Object act, String path, ChainMap<String, String> defMap) {
-        if(equalsSafely(exp, act)) return defMap;
+        System.out.println(path + ": exp = " + exp + ", act = " + act);
+        if (equalsSafely(exp, act)) return defMap;
+        if (exp.getClass() == act.getClass()) {
+            // today, timestamp, random, scale of BigDecimal
+            if (isToday(exp, act)) return defMap.$(path, "@Today");
+            if (isNow(exp, act)) return defMap.$(path, "@Now");
+            if (isRandom(exp, act)) return defMap.$(path, "@Random");
+        } else {
+            // TODO 1 & 1.0, "1" & 1, "1.0" & 1.0, "true" & true. How about "null" and null?
+        }
         return defMap.$(path, "@Difference");
+    }
+
+    private static boolean isToday(Object exp, Object act) {
+        return isDate(exp) && isToday(act);
+    }
+
+    // ex 2008-08-07, 2013/08/22, 20170715
+    private static final Pattern DAY_PTN = Pattern.compile("([0-9]{4})[-/]?([0-9]{2})[-/]?([0-9]{2})");
+
+    private static boolean isToday(Object o) {
+        Matcher m = DAY_PTN.matcher(String.valueOf(o));
+        return m.matches() && isToday(m.group(1), m.group(2), m.group(3));
+    }
+
+    private static boolean isToday(String year, String month, String day) {
+        // TODO 5min before matching
+        Calendar calendar = Calendar.getInstance();
+        return calendar.get(Calendar.YEAR) == Integer.parseInt(year)
+                && (calendar.get(Calendar.MONTH) + 1) == Integer.parseInt(month)
+                && calendar.get(Calendar.DAY_OF_MONTH) == Integer.parseInt(day);
+    }
+
+    private static boolean isDate(Object o) {
+        Matcher m = DAY_PTN.matcher(String.valueOf(o));
+        return m.matches() && isDate(m.group(1), m.group(2), m.group(3));
+    }
+
+    private static boolean isDate(String year, String month, String day) {
+        return isBetween(year, 1970, 2100)
+                && isBetween(month, 1, 12)
+                && isBetween(day, 1, 31);
+    }
+
+    private static boolean isNow(Object exp, Object act) {
+        return isDaytime(exp) && isNow(act);
+    }
+
+    private static final Pattern DAYTIME_PTN = Pattern.compile(
+            "([0-9]{4})[-/]?([0-9]{2})[-/]?([0-9]{2})[- T]([0-9]{2}):?([0-9]{2}):?([0-9]{2})(?:\\.[0-9]{3}Z?)?");
+
+    private static boolean isNow(Object o) {
+        Matcher m = DAYTIME_PTN.matcher(String.valueOf(o));
+        return m.matches() && isToday(m.group(1), m.group(2), m.group(3))
+                && isNowTime(m.group(4), m.group(5), m.group(6));
+    }
+
+    private static boolean isDaytime(Object o) {
+        Matcher m = DAYTIME_PTN.matcher(String.valueOf(o));
+        return m.matches() && isDate(m.group(1), m.group(2), m.group(3))
+                && isTime(m.group(4), m.group(5), m.group(6));
+    }
+
+    private static boolean isNowTime(String hour, String minute, String second) {
+        // TODO 5min before matching
+        Calendar calendar = Calendar.getInstance();
+        return calendar.get(Calendar.HOUR_OF_DAY) == Integer.parseInt(hour)
+                && (calendar.get(Calendar.MINUTE)) == Integer.parseInt(minute)
+                && isBetween(second, 0, 60);
+        //  Note: second should be tested like above, because it should be valid value at least.
+    }
+
+    private static boolean isTime(String hour, String minute, String second) {
+        // Note: There may be leap seconds.
+        return isBetween(hour, 0, 23)
+                && isBetween(minute, 0, 59)
+                && isBetween(second, 0, 60);
+    }
+
+    private static boolean isRandom(Object exp, Object act) {
+        return isRandom(String.valueOf(exp), String.valueOf(act));
+    }
+
+    private static boolean isRandom(String exp, String act) {
+        if (exp.length() != act.length()) return false;
+        return isRandom(exp) && isRandom(act);
+    }
+
+    private static final Pattern RANDOM_PTN = Pattern.compile("[0-9a-zA-Z+/=-]+");
+
+    private static boolean isRandom(String s) {
+        return isBetween(s.length(), 8, 128) && RANDOM_PTN.matcher(s).matches();
+    }
+
+    private static boolean isBetween(String numStr, int first, int last) {
+        return isBetween(Integer.parseInt(numStr), first, last);
+    }
+
+    private static boolean isBetween(int num, int first, int last) {
+        return first <= num && num <= last;
     }
 
     boolean isSameOrder(Set expKeys, Set actKeys) {
@@ -224,7 +354,7 @@ public class Rufa implements TestRule {
                 while (!equalsSafely(act, exp = expItr.next())) {
                     if (actKeys.contains(exp)) return false;
                 }
-            } else if(actKeys.contains(exp)) {
+            } else if (actKeys.contains(exp)) {
                 while (!equalsSafely(exp, act = actItr.next())) {
                     if (expKeys.contains(act)) return false;
                 }

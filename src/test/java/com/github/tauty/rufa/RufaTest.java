@@ -40,6 +40,7 @@ public class RufaTest {
     @Test
     public void test() {
         rufa.tmpName_assertJSONAutomatically("tako", "def", doc.get("sample"));
+//        rufa.tmpName_assertJSONAutomatically("ika", "def", doc.get("sample2"));
     }
 
     @Test
