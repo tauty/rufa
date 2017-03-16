@@ -1,10 +1,12 @@
 package com.github.tauty.rufa;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tauty.rufa.common.exception.IORuntimeException;
 import com.github.tauty.rufa.common.util.CollectionUtil.ChainMap;
 import com.github.tauty.rufa.common.util.Const;
+import com.github.tauty.rufa.common.util.PureIterator;
 import junit.framework.AssertionFailedError;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -29,8 +31,20 @@ public class Rufa implements TestRule {
     private Description desc;
     private File file;
 
+    private enum Mode {STUDY_1st, STUDY_2nd, COMPARE}
+
+    private Mode mode;
+    private int assertionCount;
+    private Map<String, Integer> assertionCountMap = new HashMap<String, Integer>();
+
     public Rufa(Object testInstance) {
         this.testInstance = testInstance;
+    }
+
+    private void init(Mode mode) {
+        this.mode = mode;
+        this.assertionCount = 0;
+        this.assertionCountMap.clear();
     }
 
     public Statement apply(Statement statement, Description description) {
@@ -41,24 +55,28 @@ public class Rufa implements TestRule {
                 + desc.getClassName().replace('.', '/') + "/" + desc.getMethodName() + ".yml");
 
         System.out.println("About to return Statement");
-        if (this.file.exists()) {
-            // compare mode
-            return new Statement() {
-                @Override
-                public void evaluate() throws Throwable {
-                    System.out.println("compare mode start");
-                    stat.evaluate();
-                    System.out.println("compare mode end");
-                }
-            };
-        } else {
+        if (!this.file.exists()) {
             // study mode
             return new Statement() {
                 @Override
                 public void evaluate() throws Throwable {
                     System.out.println("study mode start");
+                    init(Mode.STUDY_1st);
+                    stat.evaluate();
+                    init(Mode.STUDY_2nd);
                     stat.evaluate();
                     System.out.println("study mode end");
+                }
+            };
+        } else {
+            // compare mode
+            return new Statement() {
+                @Override
+                public void evaluate() throws Throwable {
+                    System.out.println("compare mode start");
+                    init(Mode.COMPARE);
+                    stat.evaluate();
+                    System.out.println("compare mode end");
                 }
             };
         }
@@ -68,13 +86,17 @@ public class Rufa implements TestRule {
 
     public void tmpName_assertJSONAutomatically(String id, String definition, String json) {
 
-
         Object actual;
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);
         try {
             actual = mapper.readValue(json, Object.class);
             System.out.println("actual2:" + actual);
             System.out.println("actual2:" + mapper.writeValueAsString(actual));
+
+            System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
+            System.out.println(prettyJSON(mapper, actual, INDENT + INDENT));
+
+
         } catch (IOException e) {
             throw new IORuntimeException(e);
         }
@@ -115,6 +137,15 @@ public class Rufa implements TestRule {
 
     }
 
+    private static String prettyJSON(ObjectMapper mapper, Object fromJsonObj, String INDENT) throws JsonProcessingException {
+        String s = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(fromJsonObj);
+        StringBuilder sb = new StringBuilder();
+        for (String line : s.split("\n")) {
+            sb.append(INDENT).append(line).append('\n');
+        }
+        return sb.toString();
+    }
+
     private ChainMap<String, String> compare(Object expected, Object actual) {
         return compare(expected, actual, "", new ChainMap<String, String>());
     }
@@ -132,75 +163,47 @@ public class Rufa implements TestRule {
 
     private ChainMap<String, String> compare(Map expMap, Map actMap, String path, ChainMap<String, String> defMap) {
         if (isSameOrder(expMap.keySet(), actMap.keySet())) {
-            defMap = compareLinkedMap(expMap, actMap, path, defMap);
+            return compareLinkedMap(expMap, actMap, path, defMap);
         } else {
             // @IgnoreOrder
-            defMap.$(path, "@IgnoreOrder");
-            defMap = compareMap(expMap, actMap, path, defMap);
-        }
-        return defMap;
-    }
-
-    private static class PureIterator<E> {
-        final private Collection<E> collection;
-        final private Iterator<E> iterator;
-        final E head;
-        final boolean hasNext;
-        PureIterator<E> tail = null;
-        PureIterator(Collection<E> collection) {
-            this(collection, collection.iterator());
-        }
-        PureIterator(Collection<E> collection, Iterator<E> iterator) {
-            this.collection = collection;
-            this.iterator = iterator;
-            this.hasNext = iterator.hasNext();
-            this.head = iterator.hasNext() ? iterator.next() : null;
-        }
-        E head() {
-            return this.head;
-        }
-        PureIterator<E> tail() {
-            if(this.tail == null) {
-                this.tail = new PureIterator<E>(this.collection, this.iterator);
-            }
-            return this.tail;
-        }
-        boolean hasNext() {
-            return this.hasNext;
-        }
-        boolean contains(Object o) {
-            return this.collection.contains(o);
+            return compareMap(expMap, actMap, path, defMap.$(path, "@IgnoreOrder"));
         }
     }
 
-    private ChainMap<String, String> compareLinkedMap(Map expMap, Map actMap, String path, ChainMap<String, String> defMap) {
-        Iterator<Map.Entry> expItr = expMap.entrySet().iterator();
-        Iterator<Map.Entry> actItr = actMap.entrySet().iterator();
+    private interface Func<T> {
+        T invoke();
+    }
 
-        while (expItr.hasNext() && actItr.hasNext()) {
-            Map.Entry exp = expItr.next();
-            Map.Entry act = actItr.next();
-            if (equalsSafely(exp.getKey(), act.getKey())) {
-            } else if (expMap.containsKey(act)) {
-                while (!equalsSafely(act, exp = expItr.next())) {
-                    defMap.$(genPath(path, exp.getKey()), "@KeyNullable");
-                }
-            } else if (actMap.containsKey(exp)) {
-                while (!equalsSafely(exp, act = actItr.next())) {
-                    defMap.$(genPath(path, act.getKey()), "@KeyNullable");
-                }
-            } else {
-                defMap.$(genPath(path, exp.getKey()), "@KeyNullable");
-                defMap.$(genPath(path, act.getKey()), "@KeyNullable");
-                continue;
+    private ChainMap<String, String> compareLinkedMap(final Map expMap, final Map actMap, final String path,
+                                                      final ChainMap<String, String> defMap) {
+
+        return new Func<ChainMap<String, String>>() {
+
+            public ChainMap<String, String> invoke() {
+                return comp(new PureIterator<Object>(expMap.keySet()), new PureIterator<Object>(actMap.keySet()), defMap);
             }
-            defMap = compare(exp.getValue(), act.getValue(), genPath(path, exp.getKey()), defMap);
-        }
-        Iterator<Map.Entry> remainingItr = expItr.hasNext() ? expItr : actItr;
-        while (remainingItr.hasNext()) {
-            defMap.$(genPath(path, remainingItr.next().getKey()), "@KeyNullable");
-        }
-        return defMap;
+
+            ChainMap<String, String> comp(PureIterator<Object> expItr, PureIterator<Object> actItr
+                    , ChainMap<String, String> defMap) {
+                if (!expItr.hasNext() && !actItr.hasNext()) return defMap;
+                if (!expItr.hasNext())
+                    return comp(expItr, actItr.tail(), defMap.$(genPath(path, actItr.head()), "@KeyNullable"));
+                if (!actItr.hasNext())
+                    return comp(expItr.tail(), actItr, defMap.$(genPath(path, expItr.head()), "@KeyNullable"));
+                if (equalsSafely(expItr.head(), actItr.head())) {
+                    compare(expMap.get(expItr.head()), actMap.get(actItr.head()), path, defMap);
+                    return comp(expItr.tail(), actItr.tail(), defMap);
+                } else if (expItr.contains(actItr.head())) {
+                    return comp(expItr.tail(), actItr, defMap.$(genPath(path, expItr.head()), "@KeyNullable"));
+                } else if (actItr.contains(expItr.head())) {
+                    return comp(expItr, actItr.tail(), defMap.$(genPath(path, actItr.head()), "@KeyNullable"));
+                } else {
+                    return comp(expItr.tail(), actItr.tail(), defMap
+                            .$(genPath(path, expItr.head()), "@KeyNullable")
+                            .$(genPath(path, actItr.head()), "@KeyNullable"));
+                }
+            }
+        }.invoke();
     }
 
     private ChainMap<String, String> compareMap(Map<?, ?> expMap, Map<?, ?> actMap, String path, ChainMap<String, String> defMap) {
@@ -342,25 +345,16 @@ public class Rufa implements TestRule {
     }
 
     boolean isSameOrder(Set expKeys, Set actKeys) {
-        Iterator expItr = expKeys.iterator();
-        Iterator actItr = actKeys.iterator();
+        return isSameOrder(new PureIterator(expKeys), new PureIterator(actKeys));
+    }
 
-        while (expItr.hasNext() && actItr.hasNext()) {
-            Object exp = expItr.next();
-            Object act = actItr.next();
-            if (equalsSafely(exp, act)) continue;
-            if (expKeys.contains(act) && actKeys.contains(exp)) return false;
-            if (expKeys.contains(act)) {
-                while (!equalsSafely(act, exp = expItr.next())) {
-                    if (actKeys.contains(exp)) return false;
-                }
-            } else if (actKeys.contains(exp)) {
-                while (!equalsSafely(exp, act = actItr.next())) {
-                    if (expKeys.contains(act)) return false;
-                }
-            }
-        }
-        return true;
+    boolean isSameOrder(PureIterator expItr, PureIterator actItr) {
+        if (!expItr.hasNext() || !actItr.hasNext()) return true;
+        if (equalsSafely(expItr.head(), actItr.head())) return isSameOrder(expItr.tail(), actItr.tail());
+        if (expItr.contains(actItr.head()) && actItr.contains(expItr.head())) return false;
+        if (expItr.contains(actItr.head())) return isSameOrder(expItr.tail(), actItr);
+        if (actItr.contains(expItr.head())) return isSameOrder(expItr, actItr.tail());
+        return isSameOrder(expItr.tail(), actItr.tail());
     }
 
     private String genPath(String path, Object key) {

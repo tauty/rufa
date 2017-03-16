@@ -1,0 +1,48 @@
+<compare_strategies>:
+  compare_strategy1:
+    - {path: "$.list.0", attribute: "@Nullable"}
+    - {path: "$.aaa.bbb.ccc", attribute: "@Today"}
+  compare_strategy2:
+    - {path: "$.aaa.bbb.ddd", attribute: "@Nullable"}
+    - {path: "$.aaa.bbb.eee", attribute: "@Today"}
+
+---
+condition: {width: 5, height: 6}
+id@compare_strategy1:
+  data: |
+    {
+      "key" : "value",
+      "isTest" : true,
+      "num" : 4096,
+      "list" : [ 1, 2, 3, 4, 5 ],
+      "float" : 3.141592653589793238462643383279
+    }
+
+id@compare_strategy1 - (2):
+  data: |
+    {
+      "key" : "value",
+      "isTest" : true,
+      "num" : 4096,
+      "list" : [ 1, 2, 3, 4, 5 ],
+      "float" : 3.141592653589793238462643383279
+    }
+  compare_strategy:
+    - {path: "$.aaa.bbb.fff", attribute: "@MayDisappear"}
+    - {path: "$.aaa.bbb.ggg", attribute: "@Today"}
+
+id@compare_strategy2:
+  data: |
+    {
+      "key" : "value",
+      "isTest" : true,
+      "num" : 4096,
+      "list" : [ 1, 2, 3, 4, 5 ],
+      "float" : 3.141592653589793238462643383279
+    }
+
+---
+condition: {width: 10, height: 9}
+sample:
+  data: |
+    {"key":"value","isTest":true,"num":4096,"list":[1,2,3,4,5],"float":3.141592653589793238462643383279}
